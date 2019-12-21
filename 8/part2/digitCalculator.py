@@ -8,10 +8,8 @@ n_layers = (len(image) - 2) / layer_area
 
 final_image = np.ones((6, 25)) * 2
 
-layers = []
 for i in range(0, n_layers):
   layer = image[i * layer_area : (i + 1) * layer_area]
-  layers.append(layer)
 
   for row in range(0, 6):
     for column in range(0, 25):

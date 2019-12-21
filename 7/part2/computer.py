@@ -28,7 +28,7 @@ def run_program(intcodes, input_vals, starting_index):
     opcode = full_opcode % 100
 
     if opcode == HALT:
-      return output_val, 0, True;
+      return output_val, 0, True
 
     inputs = [intcodes[cur_index + 1], intcodes[cur_index + 2]]
     if (opcode != USER_OUTPUT):
@@ -38,7 +38,7 @@ def run_program(intcodes, input_vals, starting_index):
       intcodes[inputs[0]] = input_val
       input_val = input_vals[1]
       cur_index += 2
-      continue;
+      continue
 
     parameters = []
     n_parameters = 1 if opcode == USER_OUTPUT else 2
@@ -59,7 +59,7 @@ def run_program(intcodes, input_vals, starting_index):
     if opcode == USER_OUTPUT:
       output_val = parameters[0]
       cur_index += 2
-      return output_val, cur_index, False;
+      return output_val, cur_index, False
 
     if opcode == JUMP_IF_TRUE:
       cur_index = parameters[1] if parameters[0] != 0 else cur_index + 3
