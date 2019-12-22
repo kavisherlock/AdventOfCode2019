@@ -1,5 +1,3 @@
-import itertools
-
 HALT = 99
 ADD = 1
 MULTIPLY = 2

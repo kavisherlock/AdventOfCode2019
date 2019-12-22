@@ -9,13 +9,14 @@ LESS_THAN = 7
 EQUAL = 8
 RELATIVE_BASE_ADJUST = 9
 
-def run_program(intcodes, input_vals, starting_index = 0):
+
+def run_program(intcodes, input_vals, starting_index, starting_relative_base):
   cur_index = starting_index
   input_ind = 0
   input_val = input_vals[input_ind]
   n = 0
   output_val = 0
-  relative_base = 0
+  relative_base = starting_relative_base
 
   # print(intcodes)
 
@@ -25,13 +26,16 @@ def run_program(intcodes, input_vals, starting_index = 0):
     opcode = full_opcode % 100
 
     if opcode == HALT:
-      return
+      # return
       # print ('HALT', output_val)
-      # return output_val, 0, True
+      return output_val, 0, True
 
     inputs = [intcodes[cur_index + 1], intcodes[cur_index + 2]]
 
+    # print(n, cur_index, full_opcode, opcode, inputs, relative_base, len(intcodes))
+
     if opcode == USER_INPUT:
+      # print ('USER_INPUT', input_val)
       param_mode = (full_opcode / 100) % 10
       if param_mode == 0:
         intcodes[inputs[0]] = input_val
@@ -60,7 +64,7 @@ def run_program(intcodes, input_vals, starting_index = 0):
             intcodes.append(0)
         parameters.append(intcodes[param_position])
 
-    if (opcode != USER_OUTPUT):
+    if (opcode in [ADD, MULTIPLY, LESS_THAN, EQUAL]):
       param_mode = (full_opcode / 10000) % 10
       result_position = intcodes[cur_index + 3]
       if param_mode == 2:
@@ -80,9 +84,9 @@ def run_program(intcodes, input_vals, starting_index = 0):
     if opcode == USER_OUTPUT:
       output_val = parameters[0]
       cur_index += 2
-      print(output_val)
+      # print(output_val)
       # print ('USER_OUTPUT', output_val)
-      # return output_val, cur_index, False
+      return output_val, cur_index, False
 
     if opcode == JUMP_IF_TRUE:
       cur_index = parameters[1] if parameters[0] != 0 else cur_index + 3
@@ -103,9 +107,9 @@ def run_program(intcodes, input_vals, starting_index = 0):
       cur_index += 2
 
 f = open("input", "r")
-
 contents = f.read()
-
 codes = map(int, contents.split(','))
-
-run_program(codes, [2])
+current_index = 0
+relative_base = 0
+input_val = 0
+output_value, current_index, halted, relative_base = run_program(codes, [input_val], current_index, relative_base)
