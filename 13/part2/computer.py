@@ -9,6 +9,11 @@ LESS_THAN = 7
 EQUAL = 8
 RELATIVE_BASE_ADJUST = 9
 
+EMPTY = 0
+WALL = 1
+BLOCK = 2
+PADDLE = 3
+BALL = 4
 
 def run_program(intcodes, input_vals, starting_index, starting_relative_base):
   cur_index = starting_index
@@ -26,8 +31,8 @@ def run_program(intcodes, input_vals, starting_index, starting_relative_base):
     opcode = full_opcode % 100
 
     if opcode == HALT:
-      # return
       # print ('HALT', output_val)
+      # return
       return output_val, 0, True, relative_base
 
     inputs = [intcodes[cur_index + 1], intcodes[cur_index + 2]]
@@ -84,7 +89,6 @@ def run_program(intcodes, input_vals, starting_index, starting_relative_base):
     if opcode == USER_OUTPUT:
       output_val = parameters[0]
       cur_index += 2
-      # print(output_val)
       # print ('USER_OUTPUT', output_val)
       return output_val, cur_index, False, relative_base
 
@@ -112,4 +116,50 @@ codes = map(int, contents.split(','))
 current_index = 0
 relative_base = 0
 input_val = 0
-output_value, current_index, halted, relative_base = run_program(codes, [input_val], current_index, relative_base)
+halted = False
+n_block_tiles = -1
+paddle_xpos = 0
+ball_xpos = 0
+score = -1
+turns = 0
+while n_block_tiles != 0:
+  turns += 1
+  n_block_tiles = 0
+  buckets = [['_' for col in range(35)] for row in range(25)]
+
+  while not halted:
+    x, current_index, halted, relative_base = run_program(codes, [input_val], current_index, relative_base)
+    if halted:
+      break
+    y, current_index, halted, relative_base = run_program(codes, [input_val], current_index, relative_base)
+    if halted:
+      break
+    tile_id, current_index, halted, relative_base = run_program(codes, [input_val], current_index, relative_base)
+
+    if x == -1 and y == 0 and tile_id != 0:
+      score = tile_id
+    else:
+      buckets[y][x] = str(tile_id) if tile_id != EMPTY else ' '
+
+    if tile_id == BLOCK:
+      n_block_tiles += 1
+    if tile_id == PADDLE:
+      paddle_xpos = x
+    if tile_id == BALL:
+      ball_xpos = x
+
+  if paddle_xpos < ball_xpos:
+    input_val = 1
+  elif paddle_xpos > ball_xpos:
+    input_val = -1
+  else:
+    input_val = 0
+  print(n_block_tiles, score)
+
+
+  halted = False
+
+  for bucket in buckets:
+    print(''.join(bucket))
+
+print('Only took', turns, 'turns')

@@ -26,8 +26,8 @@ def run_program(intcodes, input_vals, starting_index, starting_relative_base):
     opcode = full_opcode % 100
 
     if opcode == HALT:
-      # return
       # print ('HALT', output_val)
+      # return
       return output_val, 0, True, relative_base
 
     inputs = [intcodes[cur_index + 1], intcodes[cur_index + 2]]
@@ -84,7 +84,6 @@ def run_program(intcodes, input_vals, starting_index, starting_relative_base):
     if opcode == USER_OUTPUT:
       output_val = parameters[0]
       cur_index += 2
-      # print(output_val)
       # print ('USER_OUTPUT', output_val)
       return output_val, cur_index, False, relative_base
 
@@ -111,5 +110,18 @@ contents = f.read()
 codes = map(int, contents.split(','))
 current_index = 0
 relative_base = 0
-input_val = 0
-output_value, current_index, halted, relative_base = run_program(codes, [input_val], current_index, relative_base)
+input_val = 1
+halted = False
+n_block_tiles = 0
+while not halted:
+  x, current_index, halted, relative_base = run_program(codes, [input_val], current_index, relative_base)
+  if halted:
+    break
+  y, current_index, halted, relative_base = run_program(codes, [input_val], current_index, relative_base)
+  if halted:
+    break
+  tile_id, current_index, halted, relative_base = run_program(codes, [input_val], current_index, relative_base)
+  if tile_id == 2:
+    n_block_tiles += 1
+
+print(n_block_tiles)
